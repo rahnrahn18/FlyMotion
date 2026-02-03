@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">FlyMotion</string>
+    <string name="app_name">Fly Motion</string>
+    <string name="title_editor">Editor</string>
+    <string name="action_settings">Settings</string>
 </resources>
