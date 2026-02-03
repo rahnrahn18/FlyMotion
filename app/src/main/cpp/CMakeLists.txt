@@ -1,37 +1,49 @@
-# For more information about using CMake with Android Studio, read the
-# documentation: https://d.android.com/studio/projects/add-native-code.html.
-# For more examples on how to use CMake, see https://github.com/android/ndk-samples.
-
-# Sets the minimum CMake version required for this project.
 cmake_minimum_required(VERSION 3.22.1)
 
-# Declares the project name. The project name can be accessed via ${PROJECT_NAME},
-# Since this is the top level CMakeLists.txt, the project name is also accessible
-# with ${CMAKE_PROJECT_NAME} (both CMake variables are in-sync within the top level
-# build script scope).
-project("myapplication")
+project("flymotion")
 
-# Creates and names a library, sets it as either STATIC
-# or SHARED, and provides the relative paths to its source code.
-# You can define multiple libraries, and CMake builds them for you.
-# Gradle automatically packages shared libraries with your APK.
-#
-# In this top level CMakeLists.txt, ${CMAKE_PROJECT_NAME} is used to define
-# the target library name; in the sub-module's CMakeLists.txt, ${PROJECT_NAME}
-# is preferred for the same purpose.
-#
-# In order to load a library into your app from Java/Kotlin, you must call
-# System.loadLibrary() and pass the name of the library defined here;
-# for GameActivity/NativeActivity derived applications, the same library name must be
-# used in the AndroidManifest.xml file.
-add_library(myapplication SHARED
-        # List C/C++ source files with relative paths to this CMakeLists.txt.
-        native-lib.cpp)
+# Configure OpenCV
+set(OpenCV_DIR "${CMAKE_CURRENT_SOURCE_DIR}/opencv/libs/${ANDROID_ABI}")
+find_package(OpenCV REQUIRED)
+message(STATUS "OpenCV library status: ${OpenCV_LIBS}")
 
-# Specifies libraries CMake should link to your target library. You
-# can link libraries from various origins, such as libraries defined in this
-# build script, prebuilt third-party libraries, or Android system libraries.
-target_link_libraries(myapplication
-        # List libraries link to the target library
+# Define source files
+# Core
+file(GLOB CORE_SOURCES "core/*.cpp")
+# Motion
+file(GLOB MOTION_SOURCES "motion/*.cpp")
+# Export
+file(GLOB EXPORT_SOURCES "export/*.cpp")
+# JNI
+file(GLOB JNI_SOURCES "jni/*.cpp")
+# Render
+file(GLOB RENDER_SOURCES "render/*.cpp")
+# Transform
+file(GLOB TRANSFORM_SOURCES "transform/*.cpp")
+
+# Main library
+add_library(flymotion SHARED
+        native-lib.cpp
+        ${CORE_SOURCES}
+        ${MOTION_SOURCES}
+        ${EXPORT_SOURCES}
+        ${JNI_SOURCES}
+        ${RENDER_SOURCES}
+        ${TRANSFORM_SOURCES}
+)
+
+# Include directories
+target_include_directories(flymotion PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/opencv/include
+)
+
+# Link libraries
+target_link_libraries(flymotion
+        ${OpenCV_LIBS}
         android
-        log)
+        log
+        GLESv2
+        EGL
+        jnigraphics
+)
