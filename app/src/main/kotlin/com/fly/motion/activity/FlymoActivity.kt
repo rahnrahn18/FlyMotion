@@ -1,34 +1,15 @@
 package com.fly.motion.activity
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.fly.motion.databinding.ActivityMainBinding
+import com.fly.motion.ui.MainActivity
 
-class MainActivity : AppCompatActivity() {
-    
-    private var _binding: ActivityMainBinding? = null
-    private val binding: ActivityMainBinding
-        get() = checkNotNull(_binding) { "Activity has been destroyed" }
-    
+class FlymoActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        _binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        
-        binding.textView.text = stringFromJNI()
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
-    
-    external fun stringFromJNI(): String
-
-    companion object {
-        // Used to load the 'myapplication' library on application startup.
-        init {
-            System.loadLibrary("flymotion")
-        }
+        // Redirect to UI Main Activity
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 }
